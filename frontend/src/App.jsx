@@ -1,7 +1,7 @@
 // src/App.jsx
 import React from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import Home from "./pages/Home"; // Make sure the paths are correct
+
 import Upload from "./pages/Upload";
 import Store from "./pages/Store"; // Import Store page
 import Success from "./pages/success";
@@ -13,12 +13,12 @@ import ViewFiles from "./pages/ViewFiles";
 import AdminPanel from "./pages/AdminPanel";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
+import AdminLogin from "./pages/adminLogin";
 
 function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<Home />} />
         <Route path="/upload" element={<Upload />} />
         <Route path="/success" element={<Success />} />
         <Route path="/store" element={<Store />} /> {/* Add Store route */}
@@ -28,7 +28,8 @@ function App() {
         <Route path="/4-side-open" element={<FourSideOpen />} />
         <Route path="/view" element={<ViewFiles />} />
         <Route path="/admin" element={<AdminPanel />} />
-        <Route path="/login" element={<Login />} />
+        <Route path="/adminlogin" element={<AdminLogin />} />
+        <Route path="/" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
       </Routes>
     </Router>

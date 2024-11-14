@@ -25,7 +25,7 @@
 //       <Header />
 //       <main className="flex justify-center items-center flex-grow p-8">
 //         <div className="w-full max-w-md p-8 bg-white rounded-xl shadow-2xl transform transition-all hover:scale-105 duration-500">
-//           <h2 className="text-2xl font-bold text-center text-gray-700 mb-6">
+//           <h2 className="text-2xl font-heading font-bold text-center text-gray-700 mb-6">
 //             Login
 //           </h2>
 
@@ -87,6 +87,7 @@ import { FaUserAlt, FaLock } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import Header from "./Header";
 import Footer from "./Footer";
+import axios from "axios";
 
 function Login() {
   const [email, setEmail] = useState("");
@@ -97,10 +98,26 @@ function Login() {
   const handleLogin = async (e) => {
     e.preventDefault();
 
-    if (email === "admin@example.com" && password === "password123") {
-      navigate("/admin");
-    } else {
-      setErrorMessage("Invalid email or password");
+    try {
+      const response = await axios.post("http://localhost:8080/login", {
+        email,
+        password,
+      });
+
+      if (response.data.token) {
+        // Store the token in localStorage or sessionStorage
+        localStorage.setItem("authToken", response.data.token);
+
+        // Navigate to the admin page or wherever you want to redirect after login
+        navigate("/view");
+      }
+    } catch (error) {
+      // Handle errors (invalid credentials, server issues, etc.)
+      if (error.response) {
+        setErrorMessage(error.response.data.error || "Something went wrong!");
+      } else {
+        setErrorMessage("Network error. Please try again later.");
+      }
     }
   };
 
