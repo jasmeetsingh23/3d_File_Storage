@@ -33,27 +33,13 @@ db.connect((err) => {
   console.log("MySQL connected🎉".bgMagenta.white);
 });
 
-// // Setup multer for file upload (multiple files)
-// const storage = multer.diskStorage({
-//   destination: (req, file, cb) => {
-//     cb(null, "./uploads"); // Save files in 'uploads' folder
-//   },
-//   filename: (req, file, cb) => {
-//     cb(null, Date.now() + path.extname(file.originalname)); // Use current timestamp as the filename
-//   },
-// });
-
-// const upload = multer({ storage });
-
 // Setup multer for file upload (multiple files)
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, "./uploads"); // Save files in 'uploads' folder
   },
   filename: (req, file, cb) => {
-    // Generate a unique filename by combining timestamp and a random number
-    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-    cb(null, uniqueSuffix + path.extname(file.originalname)); // Append a random suffix
+    cb(null, Date.now() + path.extname(file.originalname)); // Use current timestamp as the filename
   },
 });
 
@@ -270,6 +256,70 @@ app.get("/uploads", (req, res) => {
     }
 
     res.status(200).json({ uploads: results });
+  });
+});
+
+// GET route to get the number of uploaded files grouped by design and front_depth
+app.get("/uploads/summary", (req, res) => {
+  const query = `
+    SELECT 
+      design, 
+      front_depth, 
+      COUNT(*) AS upload_count
+    FROM uploads
+    GROUP BY design, front_depth
+    ORDER BY upload_count DESC;  -- Optional: Order by number of uploads in descending order
+  `;
+
+  db.query(query, (err, results) => {
+    if (err) {
+      console.error("Error fetching summary from MySQL:", err);
+      return res
+        .status(500)
+        .json({ error: "Error fetching summary from MySQL" });
+    }
+
+    res.status(200).json({ summary: results });
+  });
+});
+
+// GET route to get the design count list and the total count of all uploads
+app.get("/uploads/count", (req, res) => {
+  // Query to get the count of uploads for each design
+  const query = `
+    SELECT 
+      design, 
+      COUNT(*) AS upload_count
+    FROM uploads
+    GROUP BY design
+    ORDER BY upload_count DESC;
+  `;
+
+  db.query(query, (err, designCounts) => {
+    if (err) {
+      console.error("Error fetching design count from MySQL:", err);
+      return res.status(500).json({ error: "Error fetching design count" });
+    }
+
+    // Query to get the total count of all uploads
+    const totalQuery = "SELECT COUNT(*) AS total_uploads FROM uploads";
+
+    db.query(totalQuery, (err, totalCountResults) => {
+      if (err) {
+        console.error("Error fetching total upload count:", err);
+        return res
+          .status(500)
+          .json({ error: "Error fetching total upload count" });
+      }
+
+      const totalUploads = totalCountResults[0].total_uploads;
+
+      // Return both the design count list and the total upload count
+      res.status(200).json({
+        design_counts: designCounts,
+        total_uploads: totalUploads,
+      });
+    });
   });
 });
 
