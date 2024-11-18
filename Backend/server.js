@@ -8,6 +8,7 @@ import colors from "colors";
 import fs from "fs";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import nodemailer from "nodemailer";
 
 dotenv.config();
 const app = express();
@@ -490,6 +491,276 @@ app.delete("/uploads/:fileNumber", (req, res) => {
     });
   });
 });
+
+// API to handle form submission
+// app.post(
+//   "/submit-inquiry",
+//   upload.fields([
+//     { name: "floorPlan", maxCount: 1 },
+//     { name: "logoFiles", maxCount: 1 },
+//   ]),
+//   (req, res) => {
+//     const {
+//       companyName,
+//       contactPerson,
+//       contactEmail,
+//       contactNumber,
+//       website,
+//       eventName,
+//       venueCity,
+//       eventDate,
+//       stallSize,
+//       sidesOpenStall,
+//       brandColor,
+//       meetingRoomRequired,
+//       storeRoomRequired,
+//       tvLedWallRequired,
+//       productDisplay,
+//       seatingRequirements,
+//       numberOfProducts,
+//       sizeOfProducts,
+//       weightOfProducts,
+//       deadline,
+//       specificInformation,
+//       suggestedBudget,
+//     } = req.body;
+
+//     const floorPlanUrl = req.files["floorPlan"]
+//       ? `/uploads/${req.files["floorPlan"][0].filename}`
+//       : "";
+//     const logoFilesUrl = req.files["logoFiles"]
+//       ? `/uploads/${req.files["logoFiles"][0].filename}`
+//       : "";
+
+//     // Insert form data into MySQL database
+//     const query = `INSERT INTO inquiry_form (
+//     company_name,
+//     contact_person,
+//     contact_email,
+//     contact_number,
+//     website,
+//     event_name,
+//     venue_city,
+//     event_date,
+//     stall_size,
+//     sides_open_stall,
+//     floor_plan_url,
+//     logo_files_url,
+//     brand_color,
+//     meeting_room_required,
+//     store_room_required,
+//     tv_led_wall_required,
+//     product_display,
+//     seating_requirements,
+//     number_of_products,
+//     size_of_products,
+//     weight_of_products,
+//     deadline,
+//     specific_information,
+//     suggested_budget
+//   ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+
+//     const values = [
+//       companyName,
+//       contactPerson,
+//       contactEmail,
+//       contactNumber,
+//       website,
+//       eventName,
+//       venueCity,
+//       eventDate,
+//       stallSize,
+//       sidesOpenStall,
+//       floorPlanUrl,
+//       logoFilesUrl,
+//       brandColor,
+//       meetingRoomRequired,
+//       storeRoomRequired,
+//       tvLedWallRequired,
+//       productDisplay,
+//       JSON.stringify(seatingRequirements), // Storing seating requirements as a JSON string
+//       numberOfProducts,
+//       sizeOfProducts,
+//       weightOfProducts,
+//       deadline,
+//       specificInformation,
+//       suggestedBudget,
+//     ];
+
+//     db.query(query, values, (err, results) => {
+//       if (err) {
+//         console.error("Error inserting data into the database:", err);
+//         return res.status(500).json({ error: "Internal Server Error" });
+//       }
+//       res
+//         .status(200)
+//         .json({ message: "Form submitted successfully", data: results });
+//     });
+//   }
+// );
+
+// Create a transporter using SMTP or Gmail service
+const transporter = nodemailer.createTransport({
+  service: "gmail", // You can use other services like 'smtp.mailtrap.io' if you prefer
+  auth: {
+    user: "expobuddy.in@gmail.com", // Your email address (Admin email)
+    pass: "expobuddy@2212", // Your email password (use environment variables in production)
+  },
+});
+
+app.post(
+  "/submit-inquiry",
+  upload.fields([
+    { name: "floorPlan", maxCount: 1 },
+    { name: "logoFiles", maxCount: 1 },
+  ]),
+  (req, res) => {
+    const {
+      companyName,
+      contactPerson,
+      contactEmail,
+      contactNumber,
+      website,
+      eventName,
+      venueCity,
+      eventDate,
+      stallSize,
+      sidesOpenStall,
+      brandColor,
+      meetingRoomRequired,
+      storeRoomRequired,
+      tvLedWallRequired,
+      productDisplay,
+      seatingRequirements,
+      numberOfProducts,
+      sizeOfProducts,
+      weightOfProducts,
+      deadline,
+      specificInformation,
+      suggestedBudget,
+    } = req.body;
+
+    const floorPlanUrl = req.files["floorPlan"]
+      ? `/uploads/${req.files["floorPlan"][0].filename}`
+      : "";
+    const logoFilesUrl = req.files["logoFiles"]
+      ? `/uploads/${req.files["logoFiles"][0].filename}`
+      : "";
+
+    // Insert form data into MySQL database
+    const query = `INSERT INTO inquiry_form (
+      company_name,
+      contact_person,
+      contact_email,
+      contact_number,
+      website,
+      event_name,
+      venue_city,
+      event_date,
+      stall_size,
+      sides_open_stall,
+      floor_plan_url,
+      logo_files_url,
+      brand_color,
+      meeting_room_required,
+      store_room_required,
+      tv_led_wall_required,
+      product_display,
+      seating_requirements,
+      number_of_products,
+      size_of_products,
+      weight_of_products,
+      deadline,
+      specific_information,
+      suggested_budget
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+
+    const values = [
+      companyName,
+      contactPerson,
+      contactEmail,
+      contactNumber,
+      website,
+      eventName,
+      venueCity,
+      eventDate,
+      stallSize,
+      sidesOpenStall,
+      floorPlanUrl,
+      logoFilesUrl,
+      brandColor,
+      meetingRoomRequired,
+      storeRoomRequired,
+      tvLedWallRequired,
+      productDisplay,
+      JSON.stringify(seatingRequirements), // Storing seating requirements as a JSON string
+      numberOfProducts,
+      sizeOfProducts,
+      weightOfProducts,
+      deadline,
+      specificInformation,
+      suggestedBudget,
+    ];
+
+    db.query(query, values, (err, results) => {
+      if (err) {
+        console.error("Error inserting data into the database:", err);
+        return res.status(500).json({ error: "Internal Server Error" });
+      }
+
+      // After successful form submission, send an email to the admin
+      const mailOptions = {
+        from: "expobuddy.in@gmail.com", // Sender email
+        to: "expobuddy.in@gmail.com", // Admin email
+        subject: "New Inquiry Form Submission", // Email subject
+        text: `
+          A new inquiry form has been submitted with the following details:
+
+          Company Name: ${companyName}
+          Contact Person: ${contactPerson}
+          Contact Email: ${contactEmail}
+          Contact Number: ${contactNumber}
+          Website: ${website}
+          Event Name: ${eventName}
+          Venue City: ${venueCity}
+          Event Date: ${eventDate}
+          Stall Size: ${stallSize}
+          Sides Open Stall: ${sidesOpenStall}
+          Brand Color: ${brandColor}
+          Meeting Room Required: ${meetingRoomRequired}
+          Store Room Required: ${storeRoomRequired}
+          TV/LED Wall Required: ${tvLedWallRequired}
+          Product Display: ${productDisplay}
+          Number of Products: ${numberOfProducts}
+          Size of Products: ${sizeOfProducts}
+          Weight of Products: ${weightOfProducts}
+          Deadline: ${deadline}
+          Specific Information: ${specificInformation}
+          Suggested Budget: ${suggestedBudget}
+          
+          Floor Plan URL: ${floorPlanUrl}
+          Logo Files URL: ${logoFilesUrl}
+          
+          Seating Requirements: ${JSON.stringify(seatingRequirements)}
+
+          Thank you.
+        `,
+      };
+
+      transporter.sendMail(mailOptions, (err, info) => {
+        if (err) {
+          console.error("Error sending email:", err);
+          return res.status(500).json({ error: "Error sending email" });
+        }
+        console.log("Email sent:", info.response);
+      });
+
+      res
+        .status(200)
+        .json({ message: "Form submitted successfully", data: results });
+    });
+  }
+);
 
 // Serve static files from the 'uploads' folder
 app.use("/uploads", express.static("uploads"));

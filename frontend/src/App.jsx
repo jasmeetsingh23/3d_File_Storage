@@ -8,6 +8,7 @@ import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import AdminLogin from "./pages/adminLogin";
 import AdminDashboard from "./pages/AdminDashboard";
+import InquiryForm from "./pages/InquiryForm";
 function App() {
   return (
     <Router>
@@ -20,6 +21,7 @@ function App() {
 
         <Route path="/signup" element={<Signup />} />
         <Route path="/dashboard" element={<AdminDashboard />} />
+        <Route path="/form" element={<InquiryForm />} />
       </Routes>
     </Router>
   );
